@@ -582,7 +582,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::15217]]
+// [[file:index.org::15182]]
   func testChainFlattens() async throws {
     let source = from([1, 2])
     let result = await collect(chain { x in from([x * 10, x * 10 + 1]) }(source))
@@ -591,7 +591,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::15740]]
+// [[file:index.org::15705]]
   func testSwitchMapSwitches() async throws {
     // With synchronous inner streams, switchMap behaves like concatMap
     // True switching requires async timing
@@ -602,7 +602,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::16172]]
+// [[file:index.org::16137]]
   func testLatestCombines() async throws {
     let s1 = from([1, 2])
     let s2 = from(["a", "b"])
@@ -612,7 +612,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::16445]]
+// [[file:index.org::16410]]
   func testApplyLatest() async throws {
     let double: @Sendable (Int) -> Int = { x in x * 2 }
     let addTen: @Sendable (Int) -> Int = { x in x + 10 }
@@ -624,12 +624,12 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::16819]]
+// [[file:index.org::16784]]
 // Note: untilStream requires Atomics package or actor-based implementation
 // Test implementation depends on the chosen approach
 // unnamed ends here
 
-// [[file:index.org::17177]]
+// [[file:index.org::17142]]
   func testSinceStreamWaits() async throws {
     let source = from([1, 2, 3, 4])
     let start = just(())
@@ -639,7 +639,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::17536]]
+// [[file:index.org::17501]]
   func testBuffer() async throws {
     let source = from([1, 2, 3, 4, 5])
     let result = await collect(buffer(2)(source))
@@ -659,12 +659,12 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::18017]]
+// [[file:index.org::17982]]
 // Note: bufferTime tests require timing control
 // Basic timing logic follows the same pattern as other time-based operators
 // unnamed ends here
 
-// [[file:index.org::18344]]
+// [[file:index.org::18309]]
   func testWindow() async throws {
     let source = from([1, 2, 3, 4, 5])
     let result = await collect(window(2)(source))
@@ -672,12 +672,12 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::18953]]
+// [[file:index.org::18918]]
 // Note: eager tests require timing control to verify pre-fetching behavior
 // The implementation follows a pattern of background buffering
 // unnamed ends here
 
-// [[file:index.org::19443]]
+// [[file:index.org::19408]]
   func testReplaySubjectBuffer() async throws {
     let subject = ReplaySubject<Int>(bufferSize: 2)
     
@@ -711,7 +711,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::20031]]
+// [[file:index.org::19996]]
   func testReplayBuffered() async throws {
     let source = from([1, 2, 3, 4, 5])
     let replayed = Replay(bufferSize: 2, source)
@@ -723,7 +723,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::20374]]
+// [[file:index.org::20339]]
   func testShareBasic() async throws {
     let source = from([1, 2, 3])
     let shared = share(source)
@@ -734,7 +734,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::20801]]
+// [[file:index.org::20766]]
   func testReplayFactory() async throws {
     let source = from([1, 2, 3])
     let factory = replayFactory(2, source)
@@ -745,7 +745,7 @@ struct SimpleError: Error {}
   }
 // unnamed ends here
 
-// [[file:index.org::20975]]
+// [[file:index.org::20940]]
   func testReplayStream() async throws {
     let source = from([1, 2, 3])
     let copies = replayStream(Int.max, source)

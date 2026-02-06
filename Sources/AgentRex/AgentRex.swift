@@ -1036,40 +1036,7 @@ public func flatMap<T: Sendable, U: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::15182]]
-/// Maps each value to a stream and flattens the results concurrently.
-/// Also known as flatMap in some libraries.
-public func chain<T: Sendable, U: Sendable>(
-  _ fn: @Sendable @escaping (T) async -> AsyncStream<U>
-) -> @Sendable (AsyncStream<T>) -> AsyncStream<U> {
-  return { stream in
-    AsyncStream { continuation in
-      Task {
-        await withTaskGroup(of: Void.self) { group in
-          for await item in stream {
-            let innerStream = await fn(item)
-            group.addTask {
-              for await innerItem in innerStream {
-                continuation.yield(innerItem)
-              }
-            }
-          }
-        }
-        continuation.finish()
-      }
-    }
-  }
-}
-
-/// Alias for chain.
-public func flatMap<T: Sendable, U: Sendable>(
-  _ fn: @Sendable @escaping (T) async -> AsyncStream<U>
-) -> @Sendable (AsyncStream<T>) -> AsyncStream<U> {
-  chain(fn)
-}
-// unnamed ends here
-
-// [[file:index.org::15708]]
+// [[file:index.org::15673]]
 /// Maps each value to a stream, canceling the previous inner stream when a new value arrives.
 public func switchMap<T: Sendable, U: Sendable>(
   _ fn: @Sendable @escaping (T) async -> AsyncStream<U>
@@ -1099,13 +1066,13 @@ public func switchMap<T: Sendable, U: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::16137]]
+// [[file:index.org::16102]]
 /// Combines two streams, emitting tuple of latest values whenever either emits.
 /// Only starts emitting after both streams have produced at least one value.
 public func latest<T: Sendable, U: Sendable>(
   _ stream1: AsyncStream<T>,
   _ stream2: AsyncStream<U>
-) -> AsyncStream<(T, U)) {
+) -> AsyncStream<(T, U)> {
   AsyncStream { continuation in
     Task {
       let state = LatestState<T, U>()
@@ -1132,7 +1099,7 @@ public func latest<T: Sendable, U: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::16402]]
+// [[file:index.org::16367]]
 /// Applies the latest function from a stream of functions to the latest value from a stream of values.
 public func applyLatest<T: Sendable, U: Sendable>(
   _ fnStream: AsyncStream<@Sendable (T) -> U>,
@@ -1173,7 +1140,7 @@ public func applyLatest<T: Sendable, U: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::16781]]
+// [[file:index.org::16746]]
 /// Emits values from source until the stop stream emits any value.
 public func untilStream<T: Sendable, S: Sendable>(
   _ stop: AsyncStream<S>
@@ -1207,7 +1174,7 @@ public func untilStream<T: Sendable, S: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::17150]]
+// [[file:index.org::17115]]
 /// Starts emitting values from source only after the start stream emits a value.
 public func sinceStream<T: Sendable, S: Sendable>(
   _ start: AsyncStream<S>
@@ -1232,7 +1199,7 @@ public func sinceStream<T: Sendable, S: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::17504]]
+// [[file:index.org::17469]]
 /// Collects values into buffers of the specified size.
 public func buffer<T: Sendable>(
   _ size: Int
@@ -1262,7 +1229,7 @@ public func buffer<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::17970]]
+// [[file:index.org::17935]]
 /// Collects values over a time window, emitting the buffer when the window closes.
 public func bufferTime<T: Sendable>(
   _ durationMs: UInt64
@@ -1307,7 +1274,7 @@ public func bufferTime<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::18331]]
+// [[file:index.org::18296]]
 /// Splits the source into windows of the specified size.
 /// Similar to buffer, but each window could be a stream (simplified to arrays here).
 public func window<T: Sendable>(
@@ -1318,7 +1285,7 @@ public func window<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::18909]]
+// [[file:index.org::18874]]
 /// Pre-fetches values from a slow producer into a buffer.
 /// Starts buffering when the first value is requested.
 public func eager<T: Sendable>(
@@ -1360,7 +1327,7 @@ public func eagerNow<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::19386]]
+// [[file:index.org::19351]]
 /// A multicasting primitive that buffers recent values and replays them to new subscribers.
 public actor ReplaySubject<T: Sendable> {
   private var buffer: [T] = []
@@ -1415,7 +1382,7 @@ public actor ReplaySubject<T: Sendable> {
 }
 // unnamed ends here
 
-// [[file:index.org::19979]]
+// [[file:index.org::19944]]
 /// Actor to manage Replay's startup state.
 actor ReplayState {
   var started = false
@@ -1465,7 +1432,7 @@ public func replay<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::20363]]
+// [[file:index.org::20328]]
 /// Like replay with buffer size 0. New subscribers only receive values emitted after subscription.
 public func share<T: Sendable>(
   _ source: AsyncStream<T>
@@ -1474,7 +1441,7 @@ public func share<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::20785]]
+// [[file:index.org::20750]]
 /// Creates a factory that produces independent copies of a buffered stream.
 public func replayFactory<T: Sendable>(
   _ bufferSize: Int,
@@ -1488,7 +1455,7 @@ public func replayFactory<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::20951]]
+// [[file:index.org::20916]]
 /// Returns a stream that emits independent copies of the source stream.
 /// Each emitted stream is a fresh subscriber.
 public func replayStream<T: Sendable>(
@@ -1510,7 +1477,7 @@ public func replayStream<T: Sendable>(
 }
 // unnamed ends here
 
-// [[file:index.org::23273]]
+// [[file:index.org::23238]]
 /// Takes at most N values from a stream, then finishes.
 public func take<T: Sendable>(_ n: Int, _ stream: AsyncStream<T>) -> AsyncStream<T> {
   AsyncStream { continuation in
